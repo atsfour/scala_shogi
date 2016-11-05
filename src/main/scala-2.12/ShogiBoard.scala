@@ -35,21 +35,22 @@ object ShogiBoard extends JFXApp {
 
   def boardObj(board: Board) = {
     val pane = new GridPane
+    val anchorCells = selectedCellIndex.fold(Set.empty[CellIndex])(board.movableCellsForKomaAt)
     board.cellIndices.foreach { c =>
       val x = 9 - c.xPos
       val y = c.yPos - 1
-      pane.add(cellObj(c), x, y)
+      pane.add(cellObj(c, anchorCells.contains(c)), x, y)
     }
     pane
   }
 
-  def cellObj(cellIndex: CellIndex): Group = {
+  def cellObj(cellIndex: CellIndex, anchored: Boolean): Group = {
     val fillColor = if (selectedCellIndex.contains(cellIndex)) LightBlue else Burlywood
 
     val rect = Rectangle(cellSize, cellSize, fillColor)
     rect.setStroke(Black)
     val koma: Option[Node] = board.komaAt(cellIndex).map(k => komaObj(k))
-    val anchor: Option[Node] = selectedCellIndex.filter(c => board.movableCellsForKomaAt(c).contains(cellIndex)).map(_ => anchorObj)
+    val anchor: Option[Node] = if (anchored) Some(anchorObj) else None
 
     val cell = new Group {
       children = List(Some(rect), koma, anchor).flatten
@@ -102,7 +103,7 @@ object ShogiBoard extends JFXApp {
     obj
   }
 
-  val anchorObj: Node = Circle(
+  def anchorObj: Node = Circle(
     cellSize / 2.0,
     cellSize / 2.0,
     cellSize / 5.0,
