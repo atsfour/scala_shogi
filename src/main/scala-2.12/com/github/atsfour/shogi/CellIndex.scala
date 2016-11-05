@@ -19,5 +19,7 @@ object CellIndex {
     assert(yPos >= 1 && yPos <= 9)
     def rotated: CellIndex = this.copy(xPos = 10 - this.xPos, yPos = 10 - this.yPos)
   }
+
+  // to avoid assertion error, it returns option
   def apply(x: Int, y: Int): Option[CellIndex] = Try(CellIndexImpl(x, y)).toOption
 }
