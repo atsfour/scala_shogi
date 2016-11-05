@@ -1,4 +1,4 @@
-package com.atsfour.shogi
+package com.github.atsfour.shogi
 
 sealed abstract class Movability(aroundDirections: Set[Direction], straightDirections: Set[Direction] = Set.empty) {
 

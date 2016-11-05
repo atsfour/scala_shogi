@@ -1,4 +1,4 @@
-package com.atsfour.shogi
+package com.github.atsfour.shogi
 
 sealed abstract class Direction(diffX: Int, diffY: Int) {
 

@@ -1,4 +1,4 @@
-package com.atsfour.shogi
+package com.github.atsfour.shogi
 
 import scala.util.Try
 

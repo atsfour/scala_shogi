@@ -1,4 +1,5 @@
-import com.atsfour.shogi._
+
+import com.github.atsfour.shogi._
 
 import scalafx.Includes._
 import scalafx.application.JFXApp

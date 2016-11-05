@@ -1,4 +1,4 @@
-package com.atsfour.shogi
+package com.github.atsfour.shogi
 
 case class Board(komaMap: Map[CellIndex, Koma]) {
 
