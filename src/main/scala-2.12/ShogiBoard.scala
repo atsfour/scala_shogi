@@ -2,17 +2,23 @@ import com.atsfour.shogi._
 
 import scalafx.Includes._
 import scalafx.application.JFXApp
-import scalafx.geometry.Pos
+import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
 import scalafx.scene.text.Font
-import scalafx.scene.{Group, Scene}
+import scalafx.scene.{Node, Group, Scene}
 import scalafx.scene.layout.GridPane
 import scalafx.scene.paint.Color._
-import scalafx.scene.shape.{Polygon, Rectangle}
+import scalafx.scene.shape.{Circle, Polygon, Rectangle}
 
 object ShogiBoard extends JFXApp {
   var board: Board = Board.initialBoard
   var selectedCellIndex: Option[CellIndex] = None
+
+  val stageHeight = 800
+  val stageWidth = 800
+  val boardSize = (stageHeight min stageWidth) * 0.9
+  val boardMargin = Insets(boardSize * 0.05)
+  val cellSize = boardSize / 9.0
 
   val boardScene = new Scene {
     fill = White
@@ -21,8 +27,8 @@ object ShogiBoard extends JFXApp {
 
   stage = new JFXApp.PrimaryStage {
     title.value = "Hello Scala Shogi"
-    width = 800
-    height = 800
+    width = stageHeight
+    height = stageWidth
     scene = boardScene
   }
 
@@ -38,15 +44,17 @@ object ShogiBoard extends JFXApp {
 
   def cellObj(cellIndex: CellIndex): Group = {
     val fillColor = if (selectedCellIndex.contains(cellIndex)) LightBlue else Burlywood
-    val grid = {
-      val rect = Rectangle(80, 80, fillColor)
-      rect.setStroke(Black)
-      rect
+
+    val rect = Rectangle(cellSize, cellSize, fillColor)
+    rect.setStroke(Black)
+    val koma: Option[Node] = board.komaAt(cellIndex).map(k => komaObj(k))
+    val anchor: Option[Node] = selectedCellIndex.filter(c => board.movableCellsForKomaAt(c).contains(cellIndex)).map(_ => anchorObj)
+
+    val cell = new Group {
+      children = List(Some(rect), koma, anchor).flatten
     }
-    val group = new Group {
-      children = List(Some(grid), board.komaMap.get(cellIndex).map(k => komaObj(k.kind))).flatten
-    }
-    group.setOnMouseClicked(e => {
+
+    cell.setOnMouseClicked(e => {
       selectedCellIndex match {
         case Some(from) => {
           board = board.moveKoma(from, cellIndex)
@@ -54,31 +62,51 @@ object ShogiBoard extends JFXApp {
         }
         case None => selectedCellIndex = Some(cellIndex)
       }
-      repaint
+      repaint()
     })
-    group
+    cell
   }
 
-  def komaObj(kind: KomaKind): Group = {
+  def komaObj(koma: Koma, cellSize: Double = cellSize): Group = {
     val komaShape = {
-      val poly = Polygon(40, 10, 60, 20, 70, 70, 10, 70, 20, 20)
+      val vertices = List(50, 5, 80, 20, 90, 90, 10, 90, 20, 20).map(_ / 100.0 * cellSize)
+      val poly = Polygon(vertices :_*)
       poly.setFill(Sienna)
       poly.setStroke(Black)
       poly
     }
     val komaLabel = {
-      val label = new Label
-      label.setText(kind.label)
-      label.setFont(Font(30))
-      label.setMaxSize(30, 30)
-      label.setLayoutX(25)
-      label.setLayoutY(25)
-      label.setAlignment(Pos.Center)
-      label
+      val text = koma.kind.label
+      val width = cellSize * 0.4
+      val height = cellSize * 0.6
+      val fontWidth = width
+      val fontHeight = height / text.length
+      val fontSize = fontWidth min fontHeight
+
+      val chars = text.zipWithIndex.map {
+        case (char, i) => {
+          val label = new Label
+          label.setText(char.toString)
+          label.setFont(Font("Serif", fontSize))
+          label.setMaxSize(fontSize, fontSize)
+          label.setLayoutX((cellSize - fontSize) / 2.0)
+          label.setLayoutY(cellSize * 0.2 + i * fontHeight)
+          label.setAlignment(Pos.TopCenter)
+          label
+        }
+      }
+      new Group(chars :_*)
     }
     val obj = new Group(komaShape, komaLabel)
     obj
   }
+
+  val anchorObj: Node = Circle(
+    cellSize / 2.0,
+    cellSize / 2.0,
+    cellSize / 5.0,
+    SlateGray
+  )
 
   def repaint(): Unit = {
     boardScene.content = boardObj(board)

@@ -14,8 +14,13 @@ case class Board(komaMap: Map[CellIndex, Koma]) {
     }
   }
 
+  def komaAt(cellIndex: CellIndex): Option[Koma] = komaMap.get(cellIndex)
+  def movableCellsForKomaAt(cellIndex: CellIndex): Set[CellIndex] = {
+    komaAt(cellIndex).fold(Set[CellIndex]())(k => k.movableCells(this, cellIndex))
+  }
+
 }
 
 object Board {
-  val initialBoard = Board(Map(CellIndex(4, 4).get -> Koma(Sente, Fu)))
+  val initialBoard = Board(Map(CellIndex(4, 4).get -> Koma(Sente, Tokin)))
 }
