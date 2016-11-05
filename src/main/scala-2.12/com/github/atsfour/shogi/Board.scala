@@ -9,8 +9,8 @@ case class Board(komaMap: Map[CellIndex, Koma]) {
 
   def moveKoma(from: CellIndex, to: CellIndex): Board = {
     komaMap.get(from) match {
-      case Some(k) => Board(komaMap - from + (to -> k))
-      case None => this
+      case Some(k) if k.canMoveTo(this, from, to) => Board(komaMap - from + (to -> k))
+      case _ => this
     }
   }
 
