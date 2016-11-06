@@ -2,7 +2,7 @@ package com.github.atsfour.shogi
 
 sealed abstract class Direction(diffX: Int, diffY: Int) {
 
-  def next(player: Player, from: CellIndex): Option[CellIndex] = {
+  def next(player: Side, from: CellIndex): Option[CellIndex] = {
     val (dx, dy) = player match {
       case Sente => (diffX, diffY)
       case Gote => (-diffX, -diffY)

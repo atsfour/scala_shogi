@@ -100,7 +100,7 @@ object ShogiBoard extends JFXApp {
       new Group(chars :_*)
     }
     val obj = new Group(komaShape, komaLabel)
-    if (koma.player == Gote) obj.setRotate(180)
+    if (koma.side == Gote) obj.setRotate(180)
     obj
   }
 
