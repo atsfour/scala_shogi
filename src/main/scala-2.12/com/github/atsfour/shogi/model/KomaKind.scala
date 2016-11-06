@@ -1,4 +1,4 @@
-package com.github.atsfour.shogi
+package com.github.atsfour.shogi.model
 
 sealed trait KomaKind {
   val label: String

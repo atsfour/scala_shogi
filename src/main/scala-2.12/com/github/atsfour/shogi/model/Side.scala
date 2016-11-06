@@ -1,4 +1,4 @@
-package com.github.atsfour.shogi
+package com.github.atsfour.shogi.model
 
 sealed abstract class Side(val label: String) {
   def enemy = this match {

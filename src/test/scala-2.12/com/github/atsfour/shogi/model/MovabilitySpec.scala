@@ -1,4 +1,4 @@
-package com.github.atsfour.shogi
+package com.github.atsfour.shogi.model
 
 import org.scalatest.{DiagrammedAssertions, FunSpec}
 

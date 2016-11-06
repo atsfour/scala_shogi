@@ -1,15 +1,16 @@
+package com.github.atsfour.shogi.gui
 
-import com.github.atsfour.shogi._
 
-import scalafx.Includes._
+import com.github.atsfour.shogi.model._
+
 import scalafx.application.JFXApp
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
-import scalafx.scene.text.Font
-import scalafx.scene.{Node, Group, Scene}
-import scalafx.scene.layout.{FlowPane, BorderPane, GridPane}
+import scalafx.scene.layout.{BorderPane, FlowPane, GridPane}
 import scalafx.scene.paint.Color._
 import scalafx.scene.shape.{Circle, Polygon, Rectangle}
+import scalafx.scene.text.Font
+import scalafx.scene.{Group, Node, Scene}
 
 object ShogiBoard extends JFXApp {
   var state: GameState = GameState.initial

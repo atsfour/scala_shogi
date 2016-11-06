@@ -1,4 +1,4 @@
-package com.github.atsfour.shogi
+package com.github.atsfour.shogi.model
 
 case class GameState(board: Board, turn: Int, senteOwnKoma: Map[KomaKind, Int], goteOwnKoma: Map[KomaKind, Int]) {
 
