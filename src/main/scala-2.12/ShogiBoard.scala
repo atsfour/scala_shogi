@@ -7,7 +7,7 @@ import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
 import scalafx.scene.text.Font
 import scalafx.scene.{Node, Group, Scene}
-import scalafx.scene.layout.GridPane
+import scalafx.scene.layout.{FlowPane, BorderPane, GridPane}
 import scalafx.scene.paint.Color._
 import scalafx.scene.shape.{Circle, Polygon, Rectangle}
 
@@ -17,20 +17,62 @@ object ShogiBoard extends JFXApp {
 
   val stageHeight = 800
   val stageWidth = 800
-  val boardSize = (stageHeight min stageWidth) * 0.9
-  val boardMargin = Insets(boardSize * 0.05)
+  val mainWidth = stageWidth
+  val mainHeight = stageHeight
+  val infoHeight = mainHeight * 0.05
+  val rightWidth = mainWidth * 0.3
+  val boardSize = mainWidth * 0.7
   val cellSize = boardSize / 9.0
 
-  val boardScene = new Scene {
+  val shogiScene = new Scene {
     fill = White
-    content = boardObj(state.board)
+    content = mainPane(state)
   }
 
   stage = new JFXApp.PrimaryStage {
-    title.value = "Hello Scala Shogi"
+    title.value = "atsfour shogi"
     width = stageHeight
     height = stageWidth
-    scene = boardScene
+    scene = shogiScene
+  }
+
+  def mainPane(state: GameState) = {
+    val pane = new BorderPane {
+      maxWidth = stageWidth
+      maxHeight = stageHeight
+      top = infoObj(state)
+      right = rightInfoObj(state)
+      center = boardObj(state.board)
+    }
+    pane
+  }
+
+  def infoObj(state: GameState): Node = {
+    val rect = Rectangle(mainWidth, infoHeight, WhiteSmoke)
+    val label = new Label {
+      text = state.infoText
+      alignment = Pos.Center
+    }
+    rect.setStroke(Black)
+    new Group(rect, label)
+  }
+
+  def rightInfoObj(state: GameState): Node = {
+    val pane = new BorderPane {
+      maxHeight = boardSize
+      maxWidth = rightWidth
+      top = ownKomaObj(state, Gote)
+      bottom = ownKomaObj(state, Sente)
+    }
+    pane
+  }
+
+  def ownKomaObj(state: GameState, side: Side) = {
+    val ownKomaMap = if (side == Sente) state.senteOwnKoma else state.goteOwnKoma
+    val komas: List[Node] = ownKomaMap.flatMap { case (kind, num) => List.fill(num)(komaObj(Koma(side, kind)))}.toList
+    new FlowPane {
+      children = komas
+    }
   }
 
   def boardObj(board: Board) = {
@@ -39,7 +81,8 @@ object ShogiBoard extends JFXApp {
     board.cellIndices.foreach { c =>
       val x = 9 - c.xPos
       val y = c.yPos - 1
-      pane.add(cellObj(c, anchorCells.contains(c)), x, y)
+      val cell = cellObj(c, anchorCells.contains(c))
+      pane.add(cell, x, y)
     }
     pane
   }
@@ -54,6 +97,7 @@ object ShogiBoard extends JFXApp {
 
     val cell = new Group {
       children = List(Some(rect), koma, anchor).flatten
+      margin = Insets(-1)
     }
 
     cell.setOnMouseClicked(e => {
@@ -115,6 +159,6 @@ object ShogiBoard extends JFXApp {
   )
 
   def repaint(): Unit = {
-    boardScene.content = boardObj(state.board)
+    shogiScene.content = mainPane(state)
   }
 }

@@ -5,7 +5,7 @@ import scala.util.Try
 trait CellIndex {
   val xPos: Int
   val yPos: Int
-  private val side: Option[Side] = yPos match {
+  protected def side: Option[Side] = yPos match {
     case i if i >= 7 => Some(Sente)
     case i if i <= 3 => Some(Gote)
     case _ => None
