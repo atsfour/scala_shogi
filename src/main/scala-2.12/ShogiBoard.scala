@@ -12,7 +12,7 @@ import scalafx.scene.paint.Color._
 import scalafx.scene.shape.{Circle, Polygon, Rectangle}
 
 object ShogiBoard extends JFXApp {
-  var board: Board = Board.initialBoard
+  var state: GameState = GameState.initial
   var selectedCellIndex: Option[CellIndex] = None
 
   val stageHeight = 800
@@ -23,7 +23,7 @@ object ShogiBoard extends JFXApp {
 
   val boardScene = new Scene {
     fill = White
-    content = boardObj(board)
+    content = boardObj(state.board)
   }
 
   stage = new JFXApp.PrimaryStage {
@@ -49,7 +49,7 @@ object ShogiBoard extends JFXApp {
 
     val rect = Rectangle(cellSize, cellSize, fillColor)
     rect.setStroke(Black)
-    val koma: Option[Node] = board.komaAt(cellIndex).map(k => komaObj(k))
+    val koma: Option[Node] = state.board.komaAt(cellIndex).map(k => komaObj(k))
     val anchor: Option[Node] = if (anchored) Some(anchorObj) else None
 
     val cell = new Group {
@@ -59,10 +59,13 @@ object ShogiBoard extends JFXApp {
     cell.setOnMouseClicked(e => {
       selectedCellIndex match {
         case Some(from) => {
-          board = board.moveKoma(from, cellIndex)
+          state = state.moveKoma(from, cellIndex)
           selectedCellIndex = None
         }
-        case None => selectedCellIndex = Some(cellIndex)
+        case None => {
+          val isMySideKoma = state.board.komaAt(cellIndex).exists(_.side == state.teban)
+          if (isMySideKoma) selectedCellIndex = Some(cellIndex)
+        }
       }
       repaint()
     })
@@ -112,6 +115,6 @@ object ShogiBoard extends JFXApp {
   )
 
   def repaint(): Unit = {
-    boardScene.content = boardObj(board)
+    boardScene.content = boardObj(state.board)
   }
 }

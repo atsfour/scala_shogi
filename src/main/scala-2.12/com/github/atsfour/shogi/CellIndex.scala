@@ -5,12 +5,19 @@ import scala.util.Try
 trait CellIndex {
   val xPos: Int
   val yPos: Int
+  private val side: Option[Side] = yPos match {
+    case i if i >= 7 => Some(Sente)
+    case i if i <= 3 => Some(Gote)
+    case _ => None
+  }
 
   /**
     * get rotated cell index by 180 degrees
     * @return rotated cell index
     */
   def rotated: CellIndex
+
+  def isEnemySideCell(selfSide: Side): Boolean = side.contains(selfSide.enemy)
 }
 
 object CellIndex {
