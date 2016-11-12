@@ -7,10 +7,10 @@ case class Board(komaMap: Map[CellIndex, Koma]) {
     j <- 1 to 9
   } yield CellIndex(i, j).get
 
+  private[model] def removed(index: CellIndex) = this.copy(komaMap = komaMap - index)
+  private[model] def updated(index: CellIndex, koma: Koma) = this.copy(komaMap = komaMap + (index -> koma))
+
   def komaAt(cellIndex: CellIndex): Option[Koma] = komaMap.get(cellIndex)
-  def movableCellsForKomaAt(cellIndex: CellIndex): Set[CellIndex] = {
-    komaAt(cellIndex).fold(Set[CellIndex]())(k => k.movableCells(this, cellIndex))
-  }
 
 }
 
@@ -29,5 +29,7 @@ object Board {
     val gote = sente.map { case (cell, koma) => cell.rotated -> Koma(Gote, koma.kind) }
     sente ++ gote
   }
-  val initial= Board(initialKomaMap)
+
+  val initial = Board(initialKomaMap)
+  val empty = Board(Map.empty)
 }

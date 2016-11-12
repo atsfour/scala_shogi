@@ -14,7 +14,7 @@ import scalafx.scene.{Group, Node, Scene}
 
 object ShogiBoard extends JFXApp {
   var state: GameState = GameState.initial
-  var selectedCellIndex: Option[CellIndex] = None
+  var selectState: SelectState = NoneSelected
 
   val stageHeight = 800
   val stageWidth = 800
@@ -69,8 +69,34 @@ object ShogiBoard extends JFXApp {
   }
 
   def ownKomaObj(state: GameState, side: Side) = {
+    val width = rightWidth / 3.0
+    val height = rightWidth / 4.0
+    val ownKomaSize = height
+
     val ownKomaMap = if (side == Sente) state.senteOwnKoma else state.goteOwnKoma
-    val komas: List[Node] = ownKomaMap.flatMap { case (kind, num) => List.fill(num)(komaObj(Koma(side, kind)))}.toList
+    val komas: List[Node] = ownKomaMap.filter {
+      case (_,  n) => n > 0
+    }.map {
+      case (kind, num) => {
+        val fillColor = selectState match {
+          case OwnKomaSelected(k, s) if k == kind && s == side => LightBlue
+          case _ => White
+        }
+        val frame = Rectangle(width, height, fillColor)
+        val koma = komaObj(Koma(Sente, kind), ownKomaSize)
+        val label = Label(num.toString)
+        val group = new Group {
+          children = List(frame, koma, label)
+        }
+        if (side == Gote) group.setRotate(180)
+        group.setOnMouseClicked { e =>
+          if (state.teban == side) selectState = OwnKomaSelected(kind, side)
+          else selectState = NoneSelected
+          repaint()
+        }
+        group
+      }
+    }.toList
     new FlowPane {
       children = komas
     }
@@ -78,7 +104,11 @@ object ShogiBoard extends JFXApp {
 
   def boardObj(board: Board) = {
     val pane = new GridPane
-    val anchorCells = selectedCellIndex.fold(Set.empty[CellIndex])(board.movableCellsForKomaAt)
+    val anchorCells: Set[CellIndex] = selectState match {
+      case CellSelected(idx) => state.movableCellsForKomaAt(idx)
+      case OwnKomaSelected(kind, _) => state.puttableCellsForKoma(kind)
+      case _ => Set()
+    }
     board.cellIndices.foreach { c =>
       val x = 9 - c.xPos
       val y = c.yPos - 1
@@ -89,7 +119,11 @@ object ShogiBoard extends JFXApp {
   }
 
   def cellObj(cellIndex: CellIndex, anchored: Boolean): Group = {
-    val fillColor = if (selectedCellIndex.contains(cellIndex)) LightBlue else Burlywood
+    val isSelected = selectState match {
+      case CellSelected(idx) => cellIndex == idx
+      case _ => false
+    }
+    val fillColor = if (isSelected) LightBlue else Burlywood
 
     val rect = Rectangle(cellSize, cellSize, fillColor)
     rect.setStroke(Black)
@@ -102,14 +136,18 @@ object ShogiBoard extends JFXApp {
     }
 
     cell.setOnMouseClicked(e => {
-      selectedCellIndex match {
-        case Some(from) => {
+      selectState match {
+        case CellSelected(from) => {
           state = state.moveKoma(from, cellIndex)
-          selectedCellIndex = None
+          selectState = NoneSelected
         }
-        case None => {
+        case OwnKomaSelected(kind, _) => {
+          state = state.putKoma(cellIndex, kind)
+          selectState = NoneSelected
+        }
+        case NoneSelected => {
           val isMySideKoma = state.board.komaAt(cellIndex).exists(_.side == state.teban)
-          if (isMySideKoma) selectedCellIndex = Some(cellIndex)
+          if (isMySideKoma) selectState = CellSelected(cellIndex)
         }
       }
       repaint()
