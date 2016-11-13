@@ -90,8 +90,13 @@ object ShogiBoard extends JFXApp {
         }
         if (side == Gote) group.setRotate(180)
         group.setOnMouseClicked { e =>
-          if (state.teban == side) selectState = OwnKomaSelected(kind, side)
-          else selectState = NoneSelected
+          selectState match {
+            case ChoosingNari => ()
+            case _ => {
+              if (state.teban == side) selectState = OwnKomaSelected(kind, side)
+              else NoneSelected
+            }
+          }
           repaint()
         }
         group
@@ -115,7 +120,8 @@ object ShogiBoard extends JFXApp {
       val cell = cellObj(c, anchorCells.contains(c))
       pane.add(cell, x, y)
     }
-    pane
+    val nariSelectDialog: Option[Node] = ???
+    new Group(List(pane, nariSelectDialog).flatten:_*)
   }
 
   def cellObj(cellIndex: CellIndex, anchored: Boolean): Group = {
@@ -139,7 +145,8 @@ object ShogiBoard extends JFXApp {
       selectState match {
         case CellSelected(from) => {
           state = state.moveKoma(from, cellIndex)
-          selectState = NoneSelected
+          if (state.canChooseNari(from, cellIndex)) selectState = ChoosingNari
+          else selectState = NoneSelected
         }
         case OwnKomaSelected(kind, _) => {
           state = state.putKoma(cellIndex, kind)
@@ -149,6 +156,7 @@ object ShogiBoard extends JFXApp {
           val isMySideKoma = state.board.komaAt(cellIndex).exists(_.side == state.teban)
           if (isMySideKoma) selectState = CellSelected(cellIndex)
         }
+        case _ => ()
       }
       repaint()
     })
