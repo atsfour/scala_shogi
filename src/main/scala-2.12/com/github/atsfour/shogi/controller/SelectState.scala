@@ -1,6 +1,6 @@
-package com.github.atsfour.shogi.gui
+package com.github.atsfour.shogi.controller
 
-import com.github.atsfour.shogi.model.{NormalKomaKind, Side, CellIndex}
+import com.github.atsfour.shogi.model.{CellIndex, NormalKomaKind, Side}
 
 sealed trait SelectState
 
