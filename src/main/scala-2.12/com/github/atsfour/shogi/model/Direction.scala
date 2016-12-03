@@ -7,7 +7,7 @@ sealed abstract class Direction(diffX: Int, diffY: Int) {
       case Sente => (diffX, diffY)
       case Gote => (-diffX, -diffY)
     }
-    CellIndex(from.xPos + dx, from.yPos + dy)
+    CellIndex(from.suji + dx, from.dan + dy)
   }
 
 }
