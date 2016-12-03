@@ -9,6 +9,17 @@ class ShogiController(gui: ShogiBoard) {
   var gameState: GameState = GameState.initial
   val scene = gui.shogiScene(this)
 
+  def infoText = {
+    val tebanInfo = s"第 ${gameState.turn} 手 ${gameState.teban.label}の手番です"
+    val selectInfo = selectState match {
+      case CellSelected(_) => "移動可能なマスを選択してください"
+      case OwnKomaSelected(_, _) => "駒を打つマスを選択してください"
+      case ChoosingNari => "成り、不成を選択してください"
+      case NoneSelected => "駒を選択してください"
+    }
+    Seq(tebanInfo, selectInfo).mkString("\n")
+  }
+
   def anchorCells: Set[CellIndex] = selectState match {
     case CellSelected(idx) => gameState.movableCellsForKomaAt(idx)
     case OwnKomaSelected(kind, _) => gameState.puttableCellsForKoma(kind)
@@ -34,6 +45,7 @@ class ShogiController(gui: ShogiBoard) {
     }
     repaint()
   }
+
   def ownKomaClicked(kind: NormalKomaKind, side: Side) = {
     selectState match {
       case ChoosingNari => ()

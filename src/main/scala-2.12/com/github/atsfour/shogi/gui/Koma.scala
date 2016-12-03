@@ -4,7 +4,6 @@ import scalafx.geometry.Pos
 import scalafx.scene.Group
 import scalafx.scene.control.Label
 import scalafx.scene.shape.Polygon
-import scalafx.scene.paint.Color._
 import scalafx.scene.text.Font
 
 case class Koma(size: Double, label: String, rotated: Boolean) {
@@ -12,8 +11,8 @@ case class Koma(size: Double, label: String, rotated: Boolean) {
   private[this] val shape = {
     val vertices = List(50, 5, 80, 20, 90, 90, 10, 90, 20, 20).map(_ / 100.0 * size)
     val poly = Polygon(vertices: _*)
-    poly.setFill(Sienna)
-    poly.setStroke(Black)
+    poly.setFill(komaColor)
+    poly.setStroke(black)
     poly
   }
   private[this] val komaLabel = {

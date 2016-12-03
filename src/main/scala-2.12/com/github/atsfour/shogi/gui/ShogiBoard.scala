@@ -2,20 +2,19 @@ package com.github.atsfour.shogi.gui
 
 
 import com.github.atsfour.shogi.controller.ShogiController
-import com.github.atsfour.shogi.model.{Gote, Sente, GameState}
+import com.github.atsfour.shogi.model.{Gote, Sente}
 
 import scalafx.application.JFXApp
 import scalafx.geometry.Pos
 import scalafx.scene.control.Label
 import scalafx.scene.layout.BorderPane
-import scalafx.scene.paint.Color._
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.{Group, Node, Scene}
 
 trait ShogiBoard {
 
   def shogiScene(ctrl: ShogiController) = new Scene {
-    fill = White
+    fill = white
     content = mainPane(ctrl)
   }
 
@@ -23,24 +22,24 @@ trait ShogiBoard {
     val pane = new BorderPane {
       maxWidth = stageWidth
       maxHeight = stageHeight
-      top = infoObj(ctrl.gameState)
-      right = rightInfoObj(ctrl)
+      top = infoNode(ctrl)
+      right = rightSideNode(ctrl)
       center = Board(ctrl).element
     }
     pane
   }
 
-  def infoObj(state: GameState): Node = {
-    val rect = Rectangle(mainWidth, infoHeight, WhiteSmoke)
+  def infoNode(ctrl: ShogiController): Node = {
+    val rect = Rectangle(mainWidth, infoHeight, infoFieldColor)
     val label = new Label {
-      text = state.infoText
+      text = ctrl.infoText
       alignment = Pos.Center
     }
-    rect.setStroke(Black)
+    rect.setStroke(black)
     new Group(rect, label)
   }
 
-  def rightInfoObj(ctrl: ShogiController): Node = {
+  def rightSideNode(ctrl: ShogiController): Node = {
     val pane = new BorderPane {
       maxHeight = boardSize
       maxWidth = rightWidth

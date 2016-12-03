@@ -7,11 +7,9 @@ import scalafx.scene.Group
 import scalafx.scene.control.Label
 import scalafx.scene.layout.FlowPane
 import scalafx.scene.shape.Rectangle
-import scalafx.scene.paint.Color._
 
-case class OwnKomaField(ctrl: ShogiController, side: Side, width: Double, height: Double) {
+case class OwnKomaField(ctrl: ShogiController, side: Side, fieldWidth: Double, fieldHeight: Double) {
 
-  private[this] val ownKomaSize = height
   private[this] val rotated = side match {
     case Sente => false
     case Gote => true
@@ -29,9 +27,9 @@ case class OwnKomaField(ctrl: ShogiController, side: Side, width: Double, height
         case OwnKomaSelected(k, s) if k == kind && s == side => true
         case _ => false
       }
-      val fillColor = if(isSelected) LightBlue else White
-      val frame = Rectangle(width, height, fillColor)
-      val koma = Koma(ownKomaSize, kind.label, rotated)
+      val fillColor = if(isSelected) selectedColor else ownKomaSpaceColor
+      val frame = Rectangle(cellSize, cellSize, fillColor)
+      val koma = Koma(cellSize, kind.label, false)
       val numLabel = Label(num.toString)
 
       new Group {
@@ -42,8 +40,23 @@ case class OwnKomaField(ctrl: ShogiController, side: Side, width: Double, height
     }
   }.toList
 
-  val element = new FlowPane {
+  private[this] val pane = new FlowPane {
+    minHeight = fieldHeight
+    maxHeight = fieldHeight
+    minWidth = fieldWidth
+    maxWidth = fieldWidth
     children = komas
+  }
+
+  private[this] val rect = new Rectangle {
+    height = fieldHeight
+    width = fieldWidth
+    stroke = white
+    fill = ownKomaSpaceColor
+  }
+
+  val element = new Group{
+    children = Seq(rect, pane)
   }
 
 }

@@ -6,23 +6,22 @@ import com.github.atsfour.shogi.model.{Gote, CellIndex}
 import scalafx.geometry.Insets
 import scalafx.scene.{Group, Node}
 import scalafx.scene.shape.{Circle, Rectangle}
-import scalafx.scene.paint.Color._
 
 case class Cell(ctrl: ShogiController, cellIndex: CellIndex, cellSize: Double) {
 
-  private[this] val fillColor = if (isSelected) LightBlue else Burlywood
+  private[this] val fillColor = if (isSelected) selectedColor else boardColor
   private[this] val rect = new Rectangle{
     width = cellSize
     height = cellSize
     fill = fillColor
-    stroke = Black
+    stroke = black
   }
 
   private[this] val anchorElement = new Circle {
     centerX = cellSize / 2.0
     centerY =  cellSize / 2.0
     radius = cellSize / 5.0
-    fill = SlateGray
+    fill = anchorColor
   }
 
   val element = new Group {

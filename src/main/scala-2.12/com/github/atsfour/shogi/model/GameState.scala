@@ -3,7 +3,6 @@ package com.github.atsfour.shogi.model
 case class GameState(board: Board, turn: Int, senteOwnKoma: Map[NormalKomaKind, Int], goteOwnKoma: Map[NormalKomaKind, Int]) {
 
   val teban : Side = if (turn % 2 == 1) Sente else Gote
-  val infoText = s"第 ${turn} 手 ${teban.label}の手番です"
 
   private val isSente: Boolean = teban == Sente
   private val tebanOwnKoma = if (isSente) senteOwnKoma else goteOwnKoma
