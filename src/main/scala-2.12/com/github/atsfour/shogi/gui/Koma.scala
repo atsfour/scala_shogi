@@ -1,12 +1,14 @@
 package com.github.atsfour.shogi.gui
 
+import com.github.atsfour.shogi.model.{Gote, Side}
+
 import scalafx.geometry.Pos
 import scalafx.scene.Group
 import scalafx.scene.control.Label
 import scalafx.scene.shape.Polygon
 import scalafx.scene.text.Font
 
-case class Koma(size: Double, label: String, rotated: Boolean) {
+case class Koma(size: Double, label: String, side: Side) {
 
   private[this] val shape = {
     val vertices = List(50, 5, 80, 20, 90, 90, 10, 90, 20, 20).map(_ / 100.0 * size)
@@ -38,7 +40,10 @@ case class Koma(size: Double, label: String, rotated: Boolean) {
   }
   val element: Group = {
     val group = new Group(shape, komaLabel)
-    if (rotated) group.setRotate(180)
+    side match {
+      case Gote => group.setRotate(180)
+      case _ =>
+    }
     group
   }
 }

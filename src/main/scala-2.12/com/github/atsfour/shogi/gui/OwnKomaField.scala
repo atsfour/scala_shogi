@@ -29,7 +29,7 @@ case class OwnKomaField(ctrl: ShogiController, side: Side, fieldWidth: Double, f
       }
       val fillColor = if(isSelected) selectedColor else ownKomaSpaceColor
       val frame = Rectangle(cellSize, cellSize, fillColor)
-      val koma = Koma(cellSize, kind.label, false)
+      val koma = Koma(cellSize, kind.label, Sente)
       val numLabel = Label(num.toString)
 
       new Group {
