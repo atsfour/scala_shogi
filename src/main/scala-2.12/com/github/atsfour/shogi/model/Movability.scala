@@ -1,7 +1,7 @@
 package com.github.atsfour.shogi.model
 
 
-sealed abstract class Movability(aroundDirections: Set[Direction], straightDirections: Set[Direction] = Set.empty) {
+private[model] sealed abstract class Movability(aroundDirections: Set[Direction], straightDirections: Set[Direction] = Set.empty) {
 
   def puttableCells(board: Board, side: Side): Set[CellIndex] = {
     board.cellIndices.toSet.filter { c =>

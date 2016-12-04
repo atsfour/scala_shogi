@@ -1,6 +1,6 @@
 package com.github.atsfour.shogi.model
 
-sealed abstract class Direction(diffX: Int, diffY: Int) {
+private[model] sealed abstract class Direction(diffX: Int, diffY: Int) {
 
   def next(player: Side, from: CellIndex): Option[CellIndex] = {
     val (dx, dy) = player match {

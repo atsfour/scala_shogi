@@ -1,11 +1,12 @@
 package com.github.atsfour.shogi.model
 
-case class Board(komaMap: Map[CellIndex, Koma]) {
+private[model] case class Board(komaMap: Map[CellIndex, Koma]) {
 
   val cellIndices: Seq[CellIndex] = for {
     i <- 1 to 9
     j <- 1 to 9
-  } yield CellIndex(i, j).get
+    cell <- CellIndex(i, j)
+  } yield cell
 
   private[model] def removed(index: CellIndex) = this.copy(komaMap = komaMap - index)
   private[model] def updated(index: CellIndex, koma: Koma) = this.copy(komaMap = komaMap + (index -> koma))
@@ -25,7 +26,7 @@ object Board {
     Map(fuList ++ other :_*)
   }
   private val initialKomaMap = {
-    val sente = initialSenteKomaMap.map { case ((x, y), kind) => CellIndex(x, y).get -> Koma(Sente, kind)}
+    val sente = initialSenteKomaMap.flatMap { case ((x, y), kind) => CellIndex(x, y).map(_ -> Koma(Sente, kind))}
     val gote = sente.map { case (cell, koma) => cell.rotated -> Koma(Gote, koma.kind) }.updated(CellIndex(5, 1).get, Koma(Gote, Gyoku))
     sente ++ gote
   }
