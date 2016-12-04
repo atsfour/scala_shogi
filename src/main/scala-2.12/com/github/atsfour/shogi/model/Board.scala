@@ -2,21 +2,19 @@ package com.github.atsfour.shogi.model
 
 private[model] case class Board(komaMap: Map[CellIndex, Koma]) {
 
-  val cellIndices: Seq[CellIndex] = for {
-    i <- 1 to 9
-    j <- 1 to 9
-    cell <- CellIndex(i, j)
-  } yield cell
-
   private[model] def removed(index: CellIndex) = this.copy(komaMap = komaMap - index)
   private[model] def updated(index: CellIndex, koma: Koma) = this.copy(komaMap = komaMap + (index -> koma))
+  private[model] def moveKoma(from: CellIndex, to: CellIndex) = komaAt(from) match {
+    case Some(k) => removed(from).updated(to, k)
+    case None => this
+  }
 
   def komaAt(cellIndex: CellIndex): Option[Koma] = komaMap.get(cellIndex)
 
   def isOute(side: Side): Boolean = komaMap.find { case (c, k) =>
     k == Koma(side, Ousho) || k == Koma(side, Gyoku)
   }.exists { case (gc, _) =>
-    komaMap.exists { case (cell, koma) => koma.side == side.enemy && koma.canMoveTo(this, cell, gc) }
+    komaMap.exists { case (cell, koma) => koma.side == side.enemy && koma.canTheoreticallyMoveTo(komaMap, cell, gc) }
   }
 
 }

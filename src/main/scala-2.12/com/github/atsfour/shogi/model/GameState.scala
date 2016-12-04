@@ -74,7 +74,7 @@ case class GameState(board: Board, turn: Int, senteOwnKoma: Map[NormalKomaKind, 
   }
 
   def puttableCellsForKoma(kind: NormalKomaKind): Set[CellIndex] = {
-    kind.movability.puttableCells(board, teban)
+    Koma(teban, kind).puttableCells(board)
   }
 
 }

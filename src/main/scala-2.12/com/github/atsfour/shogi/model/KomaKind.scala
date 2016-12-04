@@ -102,3 +102,9 @@ case object Gyoku extends NormalKomaKind {
   val nari = None
   val movability = Movability.Gyoku
 }
+
+case object Dummy extends NormalKomaKind {
+  val label = ""
+  val nari = None
+  val movability = Movability.Dummy
+}

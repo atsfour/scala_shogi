@@ -29,4 +29,9 @@ object CellIndex {
 
   // to avoid assertion error, it returns option
   def apply(x: Int, y: Int): Option[CellIndex] = Try(CellIndexImpl(x, y)).toOption
+
+  val all: Seq[CellIndex] = for {
+    suji <- 1 to 9
+    dan <- 1 to 9
+  } yield CellIndexImpl(suji, dan)
 }
