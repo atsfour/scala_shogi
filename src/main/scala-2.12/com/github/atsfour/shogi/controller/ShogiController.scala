@@ -17,7 +17,8 @@ class ShogiController(gui: ShogiBoard) {
       case ChoosingNari(_, _) => "成り、不成を選択してください"
       case NoneSelected => "駒を選択してください"
     }
-    Seq(tebanInfo, selectInfo).mkString("\n")
+    val outeInfo = if (gameState.tebanIsOute) Some("王手です") else None
+    Seq(Some(tebanInfo), Some(selectInfo), outeInfo).flatten.mkString("\n")
   }
 
   def anchorCells: Set[CellIndex] = selectState match {

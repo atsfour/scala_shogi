@@ -13,6 +13,12 @@ private[model] case class Board(komaMap: Map[CellIndex, Koma]) {
 
   def komaAt(cellIndex: CellIndex): Option[Koma] = komaMap.get(cellIndex)
 
+  def isOute(side: Side): Boolean = komaMap.find { case (c, k) =>
+    k == Koma(side, Ousho) || k == Koma(side, Gyoku)
+  }.exists { case (gc, _) =>
+    komaMap.exists { case (cell, koma) => koma.side == side.enemy && koma.canMoveTo(this, cell, gc) }
+  }
+
 }
 
 object Board {

@@ -46,6 +46,8 @@ case class GameState(board: Board, turn: Int, senteOwnKoma: Map[NormalKomaKind, 
     }
   }
 
+  def tebanIsOute: Boolean = board.isOute(teban)
+
   def playMoveKoma(from: CellIndex, to: CellIndex, nariSelect: Boolean): GameState = {
     board.komaAt(from) match {
       case Some(k) if k.canMoveTo(board, from, to) => {
