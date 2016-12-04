@@ -44,6 +44,7 @@ trait ShogiBoard {
       maxHeight = boardSize
       maxWidth = rightWidth
       top = OwnKomaField(ctrl, Gote, ownKomaFiledHeight, ownKomaFiledWidth).element
+      center = ActionField(ctrl).element
       bottom = OwnKomaField(ctrl, Sente, ownKomaFiledHeight, ownKomaFiledWidth).element
     }
     pane

@@ -21,6 +21,7 @@ package object gui {
   val anchorColor = SlateGray
   val ownKomaSpaceColor = Tan
   val infoFieldColor = WhiteSmoke
+  val buttonColor = Salmon
   val white = White
   val black = Black
 

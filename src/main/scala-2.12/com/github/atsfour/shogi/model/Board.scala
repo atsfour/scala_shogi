@@ -26,7 +26,7 @@ object Board {
   }
   private val initialKomaMap = {
     val sente = initialSenteKomaMap.map { case ((x, y), kind) => CellIndex(x, y).get -> Koma(Sente, kind)}
-    val gote = sente.map { case (cell, koma) => cell.rotated -> Koma(Gote, koma.kind) }
+    val gote = sente.map { case (cell, koma) => cell.rotated -> Koma(Gote, koma.kind) }.updated(CellIndex(5, 1).get, Koma(Gote, Gyoku))
     sente ++ gote
   }
 

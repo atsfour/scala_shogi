@@ -9,12 +9,12 @@ class ShogiController(gui: ShogiBoard) {
   var gameState: GameState = GameState.initial
   val scene = gui.shogiScene(this)
 
-  def infoText = {
+  def infoText: String = {
     val tebanInfo = s"第 ${gameState.turn} 手 ${gameState.teban.label}の手番です"
     val selectInfo = selectState match {
-      case CellSelected(_) => "移動可能なマスを選択してください"
+      case CellSelected(_) => "移動するマスを選択してください"
       case OwnKomaSelected(_, _) => "駒を打つマスを選択してください"
-      case ChoosingNari => "成り、不成を選択してください"
+      case ChoosingNari(_, _) => "成り、不成を選択してください"
       case NoneSelected => "駒を選択してください"
     }
     Seq(tebanInfo, selectInfo).mkString("\n")
@@ -26,34 +26,55 @@ class ShogiController(gui: ShogiBoard) {
     case _ => Set()
   }
 
-  def cellClicked(cellIndex: CellIndex) = {
+  def cellClicked(cellIndex: CellIndex): Unit = {
     selectState match {
       case CellSelected(from) => {
-        gameState = gameState.moveKoma(from, cellIndex)
-        if (gameState.canChooseNari(from, cellIndex)) selectState = ChoosingNari
-        else selectState = NoneSelected
+        if (gameState.canChooseNari(from, cellIndex)) {
+          selectState = ChoosingNari(from, cellIndex)
+        }
+        else {
+          gameState = gameState.playMoveKoma(from, cellIndex, false)
+          cancelSelect
+        }
       }
       case OwnKomaSelected(kind, _) => {
-        gameState = gameState.putKoma(cellIndex, kind)
-        selectState = NoneSelected
+        gameState = gameState.playPutKoma(cellIndex, kind)
+        cancelSelect
       }
       case NoneSelected => {
         val isMySideKoma = gameState.board.komaAt(cellIndex).exists(_.side == gameState.teban)
         if (isMySideKoma) selectState = CellSelected(cellIndex)
       }
-      case _ => ()
+      case ChoosingNari(_, _) => ()
+      case _ => cancelSelect
     }
     repaint()
   }
 
-  def ownKomaClicked(kind: NormalKomaKind, side: Side) = {
+  def ownKomaClicked(kind: NormalKomaKind, side: Side): Unit = {
     selectState match {
-      case ChoosingNari => ()
+      case ChoosingNari(_, _) => ()
       case _ => {
         if (gameState.teban == side) selectState = OwnKomaSelected(kind, side)
-        else NoneSelected
+        else cancelSelect
       }
     }
+    repaint()
+  }
+
+  def nariClicked(nari: Boolean): Unit = {
+    selectState match {
+      case ChoosingNari(from, to) => {
+        gameState = gameState.playMoveKoma(from, to, nari)
+      }
+      case _ => ()
+    }
+    cancelSelect
+    repaint()
+  }
+
+  def cancelSelect: Unit = {
+    selectState = NoneSelected
     repaint()
   }
 

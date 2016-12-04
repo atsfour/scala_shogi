@@ -4,7 +4,9 @@ package com.github.atsfour.shogi.model
 sealed abstract class Movability(aroundDirections: Set[Direction], straightDirections: Set[Direction] = Set.empty) {
 
   def puttableCells(board: Board, side: Side): Set[CellIndex] = {
-    board.cellIndices.toSet.filter(c => board.komaAt(c).isEmpty && movableCells(Board.empty, side, c).nonEmpty)
+    board.cellIndices.toSet.filter { c =>
+      board.komaAt(c).isEmpty && movableCells(Board.empty, side, c).nonEmpty
+    }
   }
 
   def movableCells(board: Board, side: Side, from: CellIndex): Set[CellIndex] = {

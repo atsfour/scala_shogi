@@ -1,6 +1,6 @@
 package com.github.atsfour.shogi.gui
 
-import com.github.atsfour.shogi.controller.{ShogiController, NoneSelected, ChoosingNari, CellSelected}
+import com.github.atsfour.shogi.controller.{ShogiController, CellSelected}
 import com.github.atsfour.shogi.model.{Gote, CellIndex}
 
 import scalafx.geometry.Insets
@@ -24,18 +24,18 @@ case class Cell(ctrl: ShogiController, cellIndex: CellIndex, cellSize: Double) {
     fill = anchorColor
   }
 
+  private[this] def anchor: Option[Node] = if (anchored) Some(anchorElement) else None
+
+  private[this] def isSelected = ctrl.selectState == CellSelected(cellIndex)
+
+  private[this] def koma = ctrl.gameState.board.komaAt(cellIndex).map(k => Koma(cellSize, k.kind.label, k.side == Gote))
+
+  private[this] def anchored = ctrl.anchorCells.contains(cellIndex)
+
   val element = new Group {
     children = List(Some(rect), koma.map(_.element), anchor).flatten
     margin = Insets(-1)
     onMouseClicked = { e => ctrl.cellClicked(cellIndex) }
   }
-
-  def anchor: Option[Node] = if (anchored) Some(anchorElement) else None
-
-  def isSelected = ctrl.selectState == CellSelected(cellIndex)
-
-  def koma = ctrl.gameState.board.komaAt(cellIndex).map(k => Koma(cellSize, k.kind.label, k.side == Gote))
-
-  def anchored = ctrl.anchorCells.contains(cellIndex)
 
 }
