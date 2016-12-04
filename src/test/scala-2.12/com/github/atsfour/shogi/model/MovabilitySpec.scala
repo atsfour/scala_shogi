@@ -9,7 +9,7 @@ class MovabilitySpec extends FunSpec with DiagrammedAssertions {
     describe("MovableCells") {
 
       it("returns movable cells") {
-        val emptyBoard = Board(Map.empty)
+        val emptyBoard = Board.empty
         val centerCell = CellIndex(5, 5).get
 
         val centerKinResult = Set(CellIndex(5, 4).get, CellIndex(4, 4).get, CellIndex(6, 4).get, CellIndex(4, 5).get, CellIndex(6, 5).get, CellIndex(5, 6).get)
@@ -44,6 +44,27 @@ class MovabilitySpec extends FunSpec with DiagrammedAssertions {
         val board = Board(Map(CellIndex(5, 4).get -> Koma(Gote, Fu)))
         val centerCell = CellIndex(5, 5).get
         assert(Movability.Kyosha.movableCells(board , Sente, centerCell) === Set(CellIndex(5, 4).get))
+      }
+
+    }
+
+    describe("puttableCells") {
+
+      it("returns puttable cells") {
+        val board = Board.empty
+
+        assert(Movability.Kin.puttableCells(board, Sente) === board.cellIndices.toSet)
+        assert(Movability.Kyosha.puttableCells(board, Sente) === board.cellIndices.filter(_.dan >= 2).toSet)
+        assert(Movability.Keima.puttableCells(board, Sente) === board.cellIndices.filter(_.dan >= 3).toSet)
+
+      }
+
+      it("forbid nifu") {
+        val board = Board.empty
+        assert(Movability.Fu.puttableCells(board, Sente) === board.cellIndices.filter(_.dan >= 2).toSet)
+
+        val putFuBoard = board.updated(CellIndex(3, 2).get, Koma(Sente, Fu))
+        assert(Movability.Fu.puttableCells(putFuBoard, Sente).forall(_.suji != 3))
       }
 
     }

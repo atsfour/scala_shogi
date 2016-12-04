@@ -1,5 +1,6 @@
 package com.github.atsfour.shogi.model
 
+import com.github.atsfour.shogi.model.{Fu => FuKind}
 
 private[model] sealed abstract class Movability(aroundDirections: Set[Direction], straightDirections: Set[Direction] = Set.empty) {
 
@@ -31,7 +32,13 @@ private[model] sealed abstract class Movability(aroundDirections: Set[Direction]
 
 object Movability {
 
-  case object Fu extends Movability(Set(Forward))
+  case object Fu extends Movability(Set(Forward)) {
+    // forbid nifu
+    override def puttableCells(board: Board, side: Side): Set[CellIndex] =
+      super.puttableCells(board, side).filterNot { idx =>
+        board.komaMap.exists{ case (idxx, koma) => koma.kind == FuKind && koma.side == side && idx.suji == idxx.suji }
+      }
+  }
 
   case object Kyosha extends Movability(Set.empty, Set(Forward))
 
