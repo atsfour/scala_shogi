@@ -1,7 +1,7 @@
 package com.github.atsfour.shogi.controller
 
 import com.github.atsfour.shogi.gui.ShogiBoard
-import com.github.atsfour.shogi.model.{Side, NormalKomaKind, GameState, CellIndex}
+import com.github.atsfour.shogi.model._
 
 class ShogiController(gui: ShogiBoard) {
 
@@ -34,12 +34,12 @@ class ShogiController(gui: ShogiBoard) {
           selectState = ChoosingNari(from, cellIndex)
         }
         else {
-          gameState = gameState.playMoveKoma(from, cellIndex, false)
+          gameState = gameState.play(Move(from, cellIndex, false))
           cancelSelect
         }
       }
       case OwnKomaSelected(kind, _) => {
-        gameState = gameState.playPutKoma(cellIndex, kind)
+        gameState = gameState.play(Put(cellIndex, kind))
         cancelSelect
       }
       case NoneSelected => {
@@ -66,7 +66,7 @@ class ShogiController(gui: ShogiBoard) {
   def nariClicked(nari: Boolean): Unit = {
     selectState match {
       case ChoosingNari(from, to) => {
-        gameState = gameState.playMoveKoma(from, to, nari)
+        gameState = gameState.play(Move(from, to, nari))
       }
       case _ => ()
     }

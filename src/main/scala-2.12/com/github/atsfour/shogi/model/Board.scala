@@ -35,6 +35,6 @@ object Board {
     sente ++ gote
   }
 
-  val initial = Board(initialKomaMap)
-  val empty = Board(Map.empty)
+  private[model] val initial = Board(initialKomaMap)
+  private[model] val empty = Board(Map.empty)
 }
