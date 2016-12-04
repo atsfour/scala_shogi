@@ -8,7 +8,7 @@ package object gui {
   val stageWidth = 800
   val mainWidth = stageWidth
   val mainHeight = stageHeight
-  val infoHeight = mainHeight * 0.05
+  val infoHeight = mainHeight * 0.1
   val rightWidth = mainWidth * 0.3
   val boardSize = mainWidth * 0.7
   val cellSize = boardSize / 9.0
@@ -20,9 +20,10 @@ package object gui {
   val selectedColor = LightBlue
   val anchorColor = SlateGray
   val ownKomaSpaceColor = Tan
-  val infoFieldColor = WhiteSmoke
   val buttonColor = Salmon
   val white = White
   val black = Black
+
+  val infoFieldColor = WhiteSmoke
 
 }

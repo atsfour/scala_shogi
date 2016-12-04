@@ -1,15 +1,11 @@
 package com.github.atsfour.shogi.gui
 
-
 import com.github.atsfour.shogi.controller.ShogiController
 import com.github.atsfour.shogi.model.{Gote, Sente}
 
 import scalafx.application.JFXApp
-import scalafx.geometry.Pos
-import scalafx.scene.control.Label
 import scalafx.scene.layout.BorderPane
-import scalafx.scene.shape.Rectangle
-import scalafx.scene.{Group, Node, Scene}
+import scalafx.scene.{Node, Scene}
 
 trait ShogiBoard {
 
@@ -22,21 +18,11 @@ trait ShogiBoard {
     val pane = new BorderPane {
       maxWidth = stageWidth
       maxHeight = stageHeight
-      top = infoNode(ctrl)
+      top = InformationSpace(ctrl).element
       right = rightSideNode(ctrl)
       center = Board(ctrl).element
     }
     pane
-  }
-
-  def infoNode(ctrl: ShogiController): Node = {
-    val rect = Rectangle(mainWidth, infoHeight, infoFieldColor)
-    val label = new Label {
-      text = ctrl.infoText
-      alignment = Pos.Center
-    }
-    rect.setStroke(black)
-    new Group(rect, label)
   }
 
   def rightSideNode(ctrl: ShogiController): Node = {
