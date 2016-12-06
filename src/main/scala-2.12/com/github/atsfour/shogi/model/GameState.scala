@@ -9,6 +9,26 @@ case class GameState(board: Board, turn: Int, senteOwnKoma: Map[NormalKomaKind, 
 
   def play(play: Play): GameState = play.play(this)
 
+  def movableCellsForKomaAt(cellIndex: CellIndex): Set[CellIndex] = {
+    board.komaAt(cellIndex).fold(Set[CellIndex]())(k => k.movableCells(board, cellIndex))
+  }
+
+  def puttableCellsForKoma(kind: NormalKomaKind): Set[CellIndex] = {
+    Koma(teban, kind).puttableCells(board)
+  }
+
+  def tebanIsOute: Boolean = board.isOute(teban)
+
+  def tebanIsTsumi: Boolean = {
+    val canMove = board.komaMap.exists { case (cell, koma) =>
+      koma.side == teban && movableCellsForKomaAt(cell).nonEmpty
+    }
+    val canPut = tebanOwnKoma.exists { case (kind, num) =>
+      num > 0 && puttableCellsForKoma(kind).nonEmpty
+    }
+    !canMove && !canPut
+  }
+
   def canNari(from: CellIndex, to: CellIndex, koma: Koma): Boolean = {
     val nariDefined = koma.kind match {
       case k: NormalKomaKind => k.nari.isDefined
@@ -22,16 +42,6 @@ case class GameState(board: Board, turn: Int, senteOwnKoma: Map[NormalKomaKind, 
       val canChooseNarazu = koma.canPutAt(Board.empty, to)
       canNari(from, to, koma) && canChooseNarazu
     }
-  }
-
-  def tebanIsOute: Boolean = board.isOute(teban)
-
-  def movableCellsForKomaAt(cellIndex: CellIndex): Set[CellIndex] = {
-    board.komaAt(cellIndex).fold(Set[CellIndex]())(k => k.movableCells(board, cellIndex))
-  }
-
-  def puttableCellsForKoma(kind: NormalKomaKind): Set[CellIndex] = {
-    Koma(teban, kind).puttableCells(board)
   }
 
 }

@@ -6,6 +6,7 @@ import scalafx.geometry.Pos
 import scalafx.scene.Group
 import scalafx.scene.control.Label
 import scalafx.scene.shape.Rectangle
+import scalafx.scene.text.Font
 
 case class InformationSpace(ctrl: ShogiController) {
 
@@ -19,6 +20,7 @@ case class InformationSpace(ctrl: ShogiController) {
   def label = new Label {
     text = ctrl.infoText
     alignment = Pos.Center
+    font = Font("SansSerif", 16)
   }
 
   val element = new Group(rect, label)

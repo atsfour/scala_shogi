@@ -17,7 +17,11 @@ class ShogiController(gui: ShogiBoard) {
       case ChoosingNari(_, _) => "成り、不成を選択してください"
       case NoneSelected => "駒を選択してください"
     }
-    val outeInfo = if (gameState.tebanIsOute) Some("王手です") else None
+    val outeInfo = {
+      if (gameState.tebanIsTsumi) Some(s"詰みです。${gameState.teban.enemy.label}の勝利です")
+      else if (gameState.tebanIsOute) Some("王手です")
+      else  None
+    }
     Seq(Some(tebanInfo), Some(selectInfo), outeInfo).flatten.mkString("\n")
   }
 
