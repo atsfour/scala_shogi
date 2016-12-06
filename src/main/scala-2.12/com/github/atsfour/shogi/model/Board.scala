@@ -1,6 +1,11 @@
 package com.github.atsfour.shogi.model
 
-private[model] case class Board(komaMap: Map[CellIndex, Koma]) {
+case class Board(komaMap: KomaMap, turn: Int, senteOwnKoma: Map[NormalKomaKind, Int], goteOwnKoma: Map[NormalKomaKind, Int]) {
+
+  val teban : Side = if (turn % 2 == 1) Sente else Gote
+
+  private[model] val isSente: Boolean = teban == Sente
+  private[model] val tebanOwnKoma = if (isSente) senteOwnKoma else goteOwnKoma
 
   private[model] def removed(index: CellIndex) = this.copy(komaMap = komaMap - index)
   private[model] def updated(index: CellIndex, koma: Koma) = this.copy(komaMap = komaMap + (index -> koma))
@@ -15,6 +20,41 @@ private[model] case class Board(komaMap: Map[CellIndex, Koma]) {
     k == Koma(side, Ousho) || k == Koma(side, Gyoku)
   }.exists { case (gc, _) =>
     komaMap.exists { case (cell, koma) => koma.side == side.enemy && koma.canTheoreticallyMoveTo(komaMap, cell, gc) }
+  }
+
+  def isTsumi(side: Side): Boolean = {
+    val canMove = komaMap.exists { case (cell, koma) =>
+      koma.side == side && movableCellsForKomaAt(cell).nonEmpty
+    }
+    val canPut = tebanOwnKoma.exists { case (kind, num) =>
+      num > 0 && puttableCellsForKoma(kind).nonEmpty
+    }
+    !canMove && !canPut
+  }
+
+  def play(play: Play): Board = play.play(this)
+
+  def movableCellsForKomaAt(cellIndex: CellIndex): Set[CellIndex] = {
+    komaAt(cellIndex).fold(Set[CellIndex]())(k => k.movableCells(this, cellIndex))
+  }
+
+  def puttableCellsForKoma(kind: NormalKomaKind): Set[CellIndex] = {
+    Koma(teban, kind).puttableCells(this)
+  }
+
+  def canNari(from: CellIndex, to: CellIndex, koma: Koma): Boolean = {
+    val nariDefined = koma.kind match {
+      case k: NormalKomaKind => k.nari.isDefined
+      case _ => false
+    }
+    nariDefined && from != to && (from.isEnemySideCell(teban) || to.isEnemySideCell(teban))
+  }
+
+  def canChooseNari(from: CellIndex, to: CellIndex): Boolean = {
+    komaAt(from).exists { koma =>
+      val canChooseNarazu = koma.canPutAt(Board.empty, to)
+      canNari(from, to, koma) && canChooseNarazu
+    }
   }
 
 }
@@ -35,6 +75,6 @@ object Board {
     sente ++ gote
   }
 
-  private[model] val initial = Board(initialKomaMap)
-  private[model] val empty = Board(Map.empty)
+  val empty = Board(Map.empty, 1, Map.empty, Map.empty)
+  val initial = Board(initialKomaMap, 1, Map.empty, Map.empty)
 }
