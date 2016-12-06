@@ -6,14 +6,16 @@ import scalafx.scene.Group
 import scalafx.scene.control.Label
 import scalafx.scene.layout.FlowPane
 import scalafx.scene.shape.Rectangle
+import scalafx.scene.text.Font
 
 case class ActionField(ctrl: ShogiController) {
 
   private[this] def defaultButton(buttonText: String, action: => Unit): Group = {
     val label = new Label(buttonText)
+    label.setFont(Font(16))
     val rect = new Rectangle {
       width = 40
-      height = 20
+      height = actionButtonHeight
       stroke = black
       fill = buttonColor
     }

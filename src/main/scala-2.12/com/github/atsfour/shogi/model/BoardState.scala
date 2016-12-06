@@ -1,13 +1,13 @@
 package com.github.atsfour.shogi.model
 
-case class GameState(board: Board, turn: Int, senteOwnKoma: Map[NormalKomaKind, Int], goteOwnKoma: Map[NormalKomaKind, Int]) {
+case class BoardState(board: Board, turn: Int, senteOwnKoma: Map[NormalKomaKind, Int], goteOwnKoma: Map[NormalKomaKind, Int]) {
 
   val teban : Side = if (turn % 2 == 1) Sente else Gote
 
   private[model] val isSente: Boolean = teban == Sente
   private[model] val tebanOwnKoma = if (isSente) senteOwnKoma else goteOwnKoma
 
-  def play(play: Play): GameState = play.play(this)
+  def play(play: Play): BoardState = play.play(this)
 
   def movableCellsForKomaAt(cellIndex: CellIndex): Set[CellIndex] = {
     board.komaAt(cellIndex).fold(Set[CellIndex]())(k => k.movableCells(board, cellIndex))
@@ -34,7 +34,7 @@ case class GameState(board: Board, turn: Int, senteOwnKoma: Map[NormalKomaKind, 
       case k: NormalKomaKind => k.nari.isDefined
       case _ => false
     }
-    nariDefined && (from.isEnemySideCell(teban) || to.isEnemySideCell(teban))
+    nariDefined && from != to && (from.isEnemySideCell(teban) || to.isEnemySideCell(teban))
   }
 
   def canChooseNari(from: CellIndex, to: CellIndex): Boolean = {
@@ -46,6 +46,7 @@ case class GameState(board: Board, turn: Int, senteOwnKoma: Map[NormalKomaKind, 
 
 }
 
-object GameState {
-  val initial = GameState(Board.initial, 1, Map.empty, Map.empty)
+object BoardState {
+  val empty = BoardState(Board.empty, 1, Map.empty, Map.empty)
+  val initial = BoardState(Board.initial, 1, Map.empty, Map.empty)
 }

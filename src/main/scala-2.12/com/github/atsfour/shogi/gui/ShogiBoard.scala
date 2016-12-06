@@ -18,7 +18,7 @@ trait ShogiBoard {
     val pane = new BorderPane {
       maxWidth = stageWidth
       maxHeight = stageHeight
-      top = InformationSpace(ctrl).element
+      top = InformationField(ctrl).element
       right = rightSideNode(ctrl)
       center = Board(ctrl).element
     }

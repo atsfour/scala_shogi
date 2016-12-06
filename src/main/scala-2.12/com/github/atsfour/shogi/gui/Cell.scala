@@ -28,7 +28,7 @@ case class Cell(ctrl: ShogiController, cellIndex: CellIndex, cellSize: Double) {
 
   private[this] def isSelected = ctrl.selectState == CellSelected(cellIndex)
 
-  private[this] def koma = ctrl.gameState.board.komaAt(cellIndex).map(k => Koma(cellSize, k.kind.label, k.side))
+  private[this] def koma = ctrl.boardState.board.komaAt(cellIndex).map(k => Koma(cellSize, k.kind.label, k.side))
 
   private[this] def anchored = ctrl.anchorCells.contains(cellIndex)
 

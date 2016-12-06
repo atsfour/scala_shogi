@@ -15,8 +15,8 @@ case class OwnKomaField(ctrl: ShogiController, side: Side, fieldWidth: Double, f
     case Gote => true
   }
   private def ownKomaMap = side match {
-    case Sente => ctrl.gameState.senteOwnKoma
-    case Gote => ctrl.gameState.goteOwnKoma
+    case Sente => ctrl.boardState.senteOwnKoma
+    case Gote => ctrl.boardState.goteOwnKoma
   }
 
   private[this] val komas: List[Group] = ownKomaMap.filter {

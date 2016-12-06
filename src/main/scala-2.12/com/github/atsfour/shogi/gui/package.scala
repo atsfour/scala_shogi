@@ -14,6 +14,7 @@ package object gui {
   val cellSize = boardSize / 9.0
   val ownKomaFiledHeight = cellSize * 4
   val ownKomaFiledWidth = cellSize * 4
+  val actionButtonHeight = 40
 
   val komaColor = Sienna
   val boardColor = Burlywood

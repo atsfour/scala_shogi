@@ -6,11 +6,11 @@ import com.github.atsfour.shogi.model._
 class ShogiController(gui: ShogiBoard) {
 
   var selectState: SelectState = NoneSelected
-  var gameState: GameState = GameState.initial
+  var boardState: BoardState = BoardState.initial
   val scene = gui.shogiScene(this)
 
   def infoText: String = {
-    val tebanInfo = s"第 ${gameState.turn} 手 ${gameState.teban.label}の手番です"
+    val tebanInfo = s"第 ${boardState.turn} 手 ${boardState.teban.label}の手番です"
     val selectInfo = selectState match {
       case CellSelected(_) => "移動するマスを選択してください"
       case OwnKomaSelected(_, _) => "駒を打つマスを選択してください"
@@ -18,69 +18,81 @@ class ShogiController(gui: ShogiBoard) {
       case NoneSelected => "駒を選択してください"
     }
     val outeInfo = {
-      if (gameState.tebanIsTsumi) Some(s"詰みです。${gameState.teban.enemy.label}の勝利です")
-      else if (gameState.tebanIsOute) Some("王手です")
+      if (boardState.tebanIsTsumi) Some(s"詰みです。${boardState.teban.enemy.label}の勝利です")
+      else if (boardState.tebanIsOute) Some("王手です")
       else  None
     }
     Seq(Some(tebanInfo), Some(selectInfo), outeInfo).flatten.mkString("\n")
   }
 
   def anchorCells: Set[CellIndex] = selectState match {
-    case CellSelected(idx) => gameState.movableCellsForKomaAt(idx)
-    case OwnKomaSelected(kind, _) => gameState.puttableCellsForKoma(kind)
+    case CellSelected(idx) => boardState.movableCellsForKomaAt(idx)
+    case OwnKomaSelected(kind, _) => boardState.puttableCellsForKoma(kind)
     case _ => Set()
+  }
+
+  def initialize: Unit = {
+    boardState = BoardState.initial
+    cancelSelect()
+    repaint()
   }
 
   def cellClicked(cellIndex: CellIndex): Unit = {
     selectState match {
       case CellSelected(from) => {
-        if (gameState.canChooseNari(from, cellIndex)) {
+        if (boardState.canChooseNari(from, cellIndex)) {
           selectState = ChoosingNari(from, cellIndex)
+          repaint()
         }
         else {
-          gameState = gameState.play(Move(from, cellIndex, false))
-          cancelSelect
+          boardState = boardState.play(Move(from, cellIndex, false))
+          cancelSelect()
+          repaint()
         }
       }
       case OwnKomaSelected(kind, _) => {
-        gameState = gameState.play(Put(cellIndex, kind))
-        cancelSelect
+        boardState = boardState.play(Put(cellIndex, kind))
+        cancelSelect()
+        repaint()
       }
       case NoneSelected => {
-        val isMySideKoma = gameState.board.komaAt(cellIndex).exists(_.side == gameState.teban)
-        if (isMySideKoma) selectState = CellSelected(cellIndex)
+        val isMySideKoma = boardState.board.komaAt(cellIndex).exists(_.side == boardState.teban)
+        val isMovable = boardState.movableCellsForKomaAt(cellIndex).nonEmpty
+        if (isMySideKoma && isMovable) selectState = CellSelected(cellIndex)
+        repaint()
       }
       case ChoosingNari(_, _) => ()
-      case _ => cancelSelect
+      case _ => {
+        cancelSelect()
+        repaint()
+      }
     }
-    repaint()
   }
 
   def ownKomaClicked(kind: NormalKomaKind, side: Side): Unit = {
     selectState match {
       case ChoosingNari(_, _) => ()
       case _ => {
-        if (gameState.teban == side) selectState = OwnKomaSelected(kind, side)
-        else cancelSelect
+        if (boardState.teban == side) selectState = OwnKomaSelected(kind, side)
+        else cancelSelect()
+        repaint()
       }
     }
-    repaint()
   }
 
   def nariClicked(nari: Boolean): Unit = {
     selectState match {
       case ChoosingNari(from, to) => {
-        gameState = gameState.play(Move(from, to, nari))
+        boardState = boardState.play(Move(from, to, nari))
+        cancelSelect()
+        repaint()
       }
       case _ => ()
     }
-    cancelSelect
-    repaint()
   }
 
-  def cancelSelect: Unit = {
+  def cancelSelect(): Unit = {
     selectState = NoneSelected
-    repaint()
   }
 
   def repaint(): Unit = {
